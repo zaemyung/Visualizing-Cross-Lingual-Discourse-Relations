@@ -1,4 +1,24 @@
 import streamlit as st
 
-st.header('A placeholder for the demo of "Visualizing Cross-Lingual Discourse Relations in Multilingual TED Corpora" at CODI 2021 @ EMNLP 2021')
-st.write('The page will be updated soon!')
+from mted import load_dataset
+from overall_patterns import page_overall_patterns
+from pairwise_talks import page_pairwise_talks
+from search import page_search
+
+if __name__ == '__main__':
+    st.set_page_config(
+        page_title='Viz-MTED',
+        layout='wide',
+        initial_sidebar_state='expanded',
+    )
+
+    mtalks = load_dataset()
+
+    st.sidebar.markdown("# Navigation")
+    nav_page = st.sidebar.radio('', ('Overall Patterns', 'Pairwise Talks', 'Search'))
+    if nav_page == 'Overall Patterns':
+        page_overall_patterns(mtalks)
+    elif nav_page == 'Pairwise Talks':
+        page_pairwise_talks(mtalks)
+    else:
+        page_search(mtalks)
