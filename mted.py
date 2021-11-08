@@ -37,7 +37,7 @@ class Sentence:
 
 
 class Talk:
-    """A language-specific Talk."""
+    """A language-specific Talk"""
 
     def __init__(self, json_path: str):
         with open(json_path, 'r') as f:
@@ -183,6 +183,60 @@ class MultilingualTalk:
         else:
             langs = [lang for lang in self.get_all_langs() if lang not in except_langs]
         return combinations(langs, 2)
+
+    def get_pairwise_aligned_relations(self, xx: str, yy: str) -> List[Tuple[List[Dict], List[Dict]]]:
+        def _get_relations_for_indices(indices, sentences):
+            relations = []
+            for index in indices:
+                sent = sentences[index]
+                rels = sent.intra_annotations + sent.inter_annotations_as_arg1
+                relations.extend(rels)
+            return relations
+
+        alignments = self.pairwise_alignments[(xx, yy)]
+        xx_sentences = self.talks[xx].sentences
+        yy_sentences = self.talks[yy].sentences
+        aligned_relations = []
+        for xx_inds, yy_inds in alignments:
+            xx_relations = _get_relations_for_indices(xx_inds, xx_sentences)
+            yy_relations = _get_relations_for_indices(yy_inds, yy_sentences)
+            aligned_relations.append((xx_relations, yy_relations))
+        return aligned_relations
+
+    def get_pairwise_aligned_relation_type_and_senses(self, xx: str, yy: str) -> List[Tuple[Dict, Dict]]:
+        def _get_relation_types_and_senses(relations):
+            rels_type = []
+            rels_first = []
+            rels_second = []
+            rels_first_and_second = []
+            rels_all_three = []
+            for rel in relations:
+                rel_type = rel['relation_type']
+                rels_type.append(rel_type)
+                senses = rel.get('sclass1a', 'N/A.N/A.N/A').split('.')[:2]
+                if len(senses) < 2:
+                    senses.append('N/A')
+                assert len(senses) == 2
+                rels_first.append(senses[0])
+                rels_second.append(senses[1])
+                rels_first_and_second.append((senses[0], senses[1]))
+                rels_all_three.append((rel_type, senses[0], senses[1]))
+            rels_type_sense = {
+                'type': rels_type,
+                'first': rels_first,
+                'second': rels_second,
+                'first_and_second': rels_first_and_second,
+                'all_three': rels_all_three
+            }
+            return rels_type_sense
+
+        xx_yy_type_sense = []
+        for xx_rels, yy_rels in self.get_pairwise_aligned_relations(xx, yy):
+            xx_type_sense = _get_relation_types_and_senses(xx_rels)
+            yy_type_sense = _get_relation_types_and_senses(yy_rels)
+            xx_yy_type_sense.append((xx_type_sense, yy_type_sense))
+        return xx_yy_type_sense
+
 
 @st.cache
 def load_dataset(dataset_dir: str = './dataset') -> Dict[str, MultilingualTalk]:
