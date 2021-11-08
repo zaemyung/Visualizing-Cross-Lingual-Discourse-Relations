@@ -190,8 +190,8 @@ def page_overall_patterns(mtalks: Dict[str, MultilingualTalk]) -> None:
         langpair_to_scores[(xx, yy)] = [scores['type'], scores['first'], scores['first_and_second']]
     _print_heatmap(langpair_to_scores)
 
-    sel_xx = st.selectbox('Select first language', LANGUAGES, index=4)
-    sel_yy = st.selectbox('Select second language', LANGUAGES, index=0)
+    sel_xx = st.selectbox('Select 1st language', LANGUAGES, index=4)
+    sel_yy = st.selectbox('Select 2nd language', LANGUAGES, index=0)
     if sel_xx == sel_yy:
         st.write('First and second langs must be different!')
     else:
