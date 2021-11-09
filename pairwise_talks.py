@@ -9,7 +9,7 @@ from pyvis.network import Network
 from mted import MultilingualTalk, Sentence
 
 
-def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str,
+def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str, show_en_trans: bool = False,
                                      width_pixels: int = 1700, height_pixels: int = 1500,
                                      rendering_dir: str = './renderings', use_cache: bool = False) -> None:
     def _format_sentence_for_node(sentence: str) -> str:
@@ -45,11 +45,13 @@ def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str,
         # add nodes (sentences) first
         for xx_i, sent_index in enumerate(xx_inds, start=1):
             node_id = f'{xx}-{sent_index}'
-            formatted_sent = _format_sentence_for_node(xx_sentences[sent_index].en_translation)
+            sentence = xx_sentences[sent_index].en_translation if show_en_trans else xx_sentences[sent_index].sentence
+            formatted_sent = _format_sentence_for_node(sentence)
             G.add_node(node_id, title=formatted_sent, group=xx, x=xx_width_pos + (xx_i * width_spacing * xx_width_step), y=xx_height_pos, physics=False, value=2)
         for yy_i, sent_index in enumerate(yy_inds, start=1):
             node_id = f'{yy}-{sent_index}'
-            formatted_sent = _format_sentence_for_node(yy_sentences[sent_index].en_translation)
+            sentence = yy_sentences[sent_index].en_translation if show_en_trans else yy_sentences[sent_index].sentence
+            formatted_sent = _format_sentence_for_node(sentence)
             G.add_node(node_id, title=formatted_sent, group=yy, x=yy_width_pos + (yy_i * width_spacing * yy_width_step), y=yy_height_pos, physics=False, value=2)
         # add cross-lingual edges
         for xx_sent_index, yy_sent_index in product(xx_inds, yy_inds):
@@ -75,10 +77,15 @@ def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str,
                     G.add_edge(arg1_node_id, arg2_node_id, title=f'Connective: "{conn}"', value=1.0, label=rel_type, arrowStrikethrough=True)
             else:
                 if arg1_node_id in G.get_nodes():
-                    en_sentence = sentences[r["arg1_sentence_index"]].en_translation
-                    arg1_en = r['arg1_sentence_en']
-                    arg2_en = r['arg2_sentence_en']
-                    G.get_node(arg1_node_id)['title'] = _format_intra_node(en_sentence, arg1_en, arg2_en, rel_type)
+                    if show_en_trans:
+                        sentence = sentences[r["arg1_sentence_index"]].en_translation
+                        arg1 = r['arg1_sentence_en']
+                        arg2 = r['arg2_sentence_en']
+                    else:
+                        sentence = sentences[r["arg1_sentence_index"]].sentence
+                        arg1 = r['arg1_sentence']
+                        arg2 = r['arg2_sentence']
+                    G.get_node(arg1_node_id)['title'] = _format_intra_node(sentence, arg1, arg2, rel_type)
 
     def _render_streamlit_component(component_path: str) -> None:
         with open(component_path, 'r', encoding='utf-8') as f:
@@ -125,15 +132,17 @@ def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str,
 def page_pairwise_talks(mtalks: Dict[str, MultilingualTalk]) -> None:
     st.header('Interactive Graph Network for Pairwise Talks')
     sel_talk_id = st.selectbox('Select Talk ID', list(mtalks.keys()), index=0)
-    st.subheader(sel_talk_id)
     sel_talk = mtalks[sel_talk_id]
     languages = sel_talk.get_all_langs()
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         sel_xx = st.selectbox('Select 1st language', languages, index=languages.index('English'))
     with col2:
         sel_yy = st.selectbox('Select 2nd language', languages, index=languages.index('German'))
+    with col3:
+        show_en_trans = st.selectbox('Show English translations instead', ['Yes', 'No'], index=1)
     if sel_xx == sel_yy:
         st.write('First and second langs must be different!')
     else:
-        render_interactive_graph_network(sel_talk, sel_xx, sel_yy)
+        show_en_trans = True if show_en_trans == 'Yes' else False
+        render_interactive_graph_network(sel_talk, sel_xx, sel_yy, show_en_trans)
