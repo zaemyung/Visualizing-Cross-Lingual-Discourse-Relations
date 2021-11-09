@@ -104,12 +104,14 @@ def mine_association_rules(mtalks: Dict[str, MultilingualTalk], xx: str, yy: str
 
 
 def find_relation_translation_pattern(mtalks: Dict[str, MultilingualTalk], xx: str, yy: str):
-    def draw_two_pie_charts(data1, data2, title):
+    def draw_two_pie_charts(data1, data2, main_title, data1_title, data2_title):
         fig = plt.figure(figsize=(22, 10))
-        fig.suptitle(title)
+        fig.suptitle(main_title)
         ax1 = plt.subplot2grid((1, 2), (0, 0))
+        ax1.set_title(data1_title)
         plt.pie(x=data1.values(), labels=data1.keys(), autopct="%.1f%%", explode=[0.05]*len(data1), pctdistance=0.5)
         ax2 = plt.subplot2grid((1, 2), (0, 1))
+        ax2.set_title(data2_title)
         plt.pie(x=data2.values(), labels=data2.keys(), autopct="%.1f%%", explode=[0.05]*len(data2), pctdistance=0.5)
         st.pyplot(fig)
 
@@ -145,12 +147,11 @@ def find_relation_translation_pattern(mtalks: Dict[str, MultilingualTalk], xx: s
         with st.expander(pattern):
             rels_dict_xx2yy = patterns_xx2yy[pattern]
             rels_dict_yy2xx = patterns_yy2xx[pattern]
-            st.subheader(f'{xx} -> {yy}')
             for rel_key in sorted(rels_dict_xx2yy.keys()):
                 xx_rel_counter = rels_dict_xx2yy[rel_key]
                 yy_rel_counter = rels_dict_yy2xx[rel_key]
                 with st.container():
-                    draw_two_pie_charts(xx_rel_counter, yy_rel_counter, f'{rel_key} ->')
+                    draw_two_pie_charts(xx_rel_counter, yy_rel_counter, f'{rel_key} ->', f'{xx} -> {yy}', f'{yy} -> {xx}')
                     st.markdown('''---''')
 
 
@@ -192,9 +193,9 @@ def page_overall_patterns(mtalks: Dict[str, MultilingualTalk]) -> None:
 
     col1, col2 = st.columns(2)
     with col1:
-        sel_xx = st.selectbox('Select 1st language', LANGUAGES, index=4)
+        sel_xx = st.selectbox('Select 1st language', LANGUAGES, index=LANGUAGES.index('English'))
     with col2:
-        sel_yy = st.selectbox('Select 2nd language', LANGUAGES, index=0)
+        sel_yy = st.selectbox('Select 2nd language', LANGUAGES, index=LANGUAGES.index('German'))
     if sel_xx == sel_yy:
         st.write('First and second langs must be different!')
     else:

@@ -127,13 +127,13 @@ def page_pairwise_talks(mtalks: Dict[str, MultilingualTalk]) -> None:
     sel_talk_id = st.selectbox('Select Talk ID', list(mtalks.keys()), index=0)
     st.subheader(sel_talk_id)
     sel_talk = mtalks[sel_talk_id]
+    languages = sel_talk.get_all_langs()
     col1, col2 = st.columns(2)
     with col1:
-        sel_xx = st.selectbox('Select 1st language', sel_talk.get_all_langs(), index=1)
+        sel_xx = st.selectbox('Select 1st language', languages, index=languages.index('English'))
     with col2:
-        sel_yy = st.selectbox('Select 2nd language', sel_talk.get_all_langs(), index=0)
+        sel_yy = st.selectbox('Select 2nd language', languages, index=languages.index('German'))
     if sel_xx == sel_yy:
         st.write('First and second langs must be different!')
     else:
-        st.write(sel_xx, sel_yy)
         render_interactive_graph_network(sel_talk, sel_xx, sel_yy)

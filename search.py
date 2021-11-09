@@ -41,7 +41,7 @@ def _render_found_results(results: List[Dict], query: str) -> None:
 def page_search(mtalks: Dict[str, MultilingualTalk]) -> None:
     col1, col2 = st.columns(2)
     with col1:
-        sel_xx = st.selectbox('Select language', LANGUAGES, index=4)
+        sel_xx = st.selectbox('Select language', LANGUAGES, index=LANGUAGES.index('English'))
     with col2:
         query = st.text_input('Enter search query', max_chars=100)
 
