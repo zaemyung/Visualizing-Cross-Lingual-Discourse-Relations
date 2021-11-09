@@ -1,5 +1,5 @@
 # Visualizing-Cross-Lingual-Discourse-Relations
-Codes for paper, "Visualizing Cross-Lingual Discourse Relations in Multilingual TED Corpora" at CODI 2021 @ EMNLP 2021
+Codes for paper, "[Visualizing Cross-Lingual Discourse Relations in Multilingual TED Corpora](https://aclanthology.org/2021.codi-main.16/)" at [CODI @ EMNLP 2021](https://sites.google.com/view/codi-2021/home)
 
 # Requirements
 - Python 3 (tested on 3.8+)
@@ -19,11 +19,12 @@ If you use this resource, please consider citing:
 
 ```
 @inproceedings{kim-etal-2021-visualizing,
-    title={Visualizing Cross-Lingual Discourse Relations in Multilingual TED Corpora},
-    author={Kim, Zae Myung and Nikoulina, Vassilina and Kang, Dongyeop and Schwab, Didier and Besacier, Laurent},
-    booktitle={Proceedings of the Second Workshop on Computational Approaches to Discourse},
+    title={Visualizing Cross‐Lingual Discourse Relations in Multilingual TED Corpora},
+    author={Kim, Zae Myung and Nikoulina, Vassilina and Kang, Dongyeop and Schwab, Didier and Besacier, Laurent",
+    booktitle={Proceedings of the 2nd Workshop on Computational Approaches to Discourse},
+    pages={165--170},
     year={2021},
-    publisher={Association for Computational Linguistics},
+    publisher={Association for Computational Linguistics}
 }
 
 @inproceedings{long-etal-2020-shallow,
