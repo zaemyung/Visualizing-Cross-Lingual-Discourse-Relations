@@ -6,7 +6,7 @@ import streamlit as st
 from mted import LANGUAGES, MultilingualTalk
 
 
-def _parse_relations(relations: List[Dict]):
+def _parse_relations(relations: List[Dict]) -> str:
     parsed = []
     for r in relations:
         class_type = '.'.join(r.get('sclass1a', 'N/A').split('.')[:2])
@@ -19,7 +19,7 @@ def _parse_relations(relations: List[Dict]):
 
 
 def _render_found_results(results: List[Dict], query: str) -> None:
-    def _highlight_sentence(string):
+    def _highlight_sentence(string: str) -> str:
         return string.replace(query, f'❮{query}❯')
 
     for res in results:
