@@ -99,7 +99,13 @@ def mine_association_rules(mtalks: Dict[str, MultilingualTalk], xx: str, yy: str
 
     results_first = list(apriori(transactions_first))
     st.header('Association Rules')
-    st.write('Below, we show association rules that are "non-identical" and have lift score greater than "1.0".')
+    st.markdown('Both $confidence$ and $lift$ are two useful concepts in *association rule learning* that select interesting rules from the set of all possible rules.')
+    st.markdown('$Confidence$ value (ranging from 0 to 1) of a rule $X → Y$ represents the proportion of transactions that contains $X$ which also contains $Y$.\n' +
+                'It can be interpreted as an estimate of conditional probability $P(Y|X)$.')
+    st.markdown('$Lift$ value (ranging from 0 to ∞) measures how much more often the antecedent $X$ and consequent $Y$ of the rule occur jointly than if they were statistically independent ($lift = 1.0$).')
+    st.markdown('$Lift$ value of a rule greater than 1.0 means that $X$ and $Y$ are statistically dependent and therefore, potentially a useful rule.')
+    st.markdown('Below, we show association rules that are "non-identical" and have lift score greater than 1.0.')
+    st.markdown('---')
     _print_rules(results_first)
 
 
