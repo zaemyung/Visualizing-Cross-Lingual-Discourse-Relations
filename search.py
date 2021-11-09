@@ -26,9 +26,10 @@ def _render_found_results(results: List[Dict], query: str) -> None:
         sent = res['sentence']
         before_sent = res['before_sentence']
         after_sent = res['after_sentence']
-        with st.expander(sent.sentence):
+        highlighted_sentence = _highlight_sentence(sent.sentence)
+        with st.expander(highlighted_sentence):
             parsed_res = {'before_sent': before_sent.sentence,
-                          'current_sent': _highlight_sentence(sent.sentence),
+                          'current_sent': highlighted_sentence,
                           'after_sent': after_sent.sentence,
                           'before_rel': _parse_relations(before_sent.intra_annotations + before_sent.inter_annotations_as_arg1),
                           'current_rel': _parse_relations(sent.intra_annotations + sent.inter_annotations_as_arg1),
@@ -54,7 +55,7 @@ def page_search(mtalks: Dict[str, MultilingualTalk]) -> None:
         found = []
         for talk in talks:
             for sent_index, sent_instance in enumerate(talk.sentences):
-                if query in sent_instance.sentence.split():
+                if query in sent_instance.sentence:
                     before_sentence = talk.sentences[sent_index - 1] if sent_index > 0 else None
                     after_sentence = talk.sentences[sent_index + 1] if sent_index < len(talk.sentences) - 1 else None
                     result = {'talk_id': talk.talk_id,
