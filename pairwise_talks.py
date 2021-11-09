@@ -129,7 +129,7 @@ def page_pairwise_talks(mtalks: Dict[str, MultilingualTalk]) -> None:
     sel_talk = mtalks[sel_talk_id]
     col1, col2 = st.columns(2)
     with col1:
-        sel_xx = st.selectbox('Select 1st language', sel_talk.get_all_langs(), index=4)
+        sel_xx = st.selectbox('Select 1st language', sel_talk.get_all_langs(), index=1)
     with col2:
         sel_yy = st.selectbox('Select 2nd language', sel_talk.get_all_langs(), index=0)
     if sel_xx == sel_yy:
