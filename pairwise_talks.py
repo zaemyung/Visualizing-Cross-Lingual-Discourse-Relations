@@ -9,24 +9,33 @@ from pyvis.network import Network
 from mted import MultilingualTalk, Sentence
 
 
+def _format_sentence_for_node(sentence: str) -> str:
+    tokens = sentence.split()
+    new_tokens = []
+    for i, tok in enumerate(tokens, start=1):
+        new_tokens.append(tok)
+        if i % 6 == 0:
+            new_tokens.append('<br>')
+    return ' '.join(new_tokens)
+
+
+def _format_intra_node(whole_sentence: str, arg1_part: str, arg2_part: str, rel_type: str) -> str:
+    # surround arg1_part and arg2_part with tag
+    whole_sentence = whole_sentence.replace(arg1_part, f' ❮{rel_type}-arg1❯ {arg1_part} ❮/arg1❯ ')
+    whole_sentence = whole_sentence.replace(arg2_part, f' ❮{rel_type}-arg2❯ {arg2_part} ❮/arg2❯ ')
+    whole_sentence = _format_sentence_for_node(whole_sentence)
+    return whole_sentence
+
+
+def _render_streamlit_component(component_path: str, width_pixels: int, height_pixels: int) -> None:
+    with open(component_path, 'r', encoding='utf-8') as f:
+        source_code = f.read()
+    components.html(source_code, width=width_pixels, height=height_pixels)
+
+
 def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str, show_en_trans: bool = False,
                                      width_pixels: int = 1700, height_pixels: int = 1500,
                                      rendering_dir: str = './renderings', use_cache: bool = False) -> None:
-    def _format_sentence_for_node(sentence: str) -> str:
-        tokens = sentence.split()
-        new_tokens = []
-        for i, tok in enumerate(tokens, start=1):
-            new_tokens.append(tok)
-            if i % 10 == 0:
-                new_tokens.append('<br>')
-        return ' '.join(new_tokens)
-
-    def _format_intra_node(whole_sentence: str, arg1_part: str, arg2_part: str, rel_type: str) -> str:
-        # surround arg1_part and arg2_part with tag
-        whole_sentence = whole_sentence.replace(arg1_part, f'❮{rel_type}-arg1❯{arg1_part}❮/arg1❯')
-        whole_sentence = whole_sentence.replace(arg2_part, f'❮{rel_type}-arg2❯{arg2_part}❮/arg2❯')
-        whole_sentence = _format_sentence_for_node(whole_sentence)
-        return whole_sentence
 
     def _add_paired_nodes_and_crosslingaul_relations(xx_inds: List[int], yy_inds: List[int],
                                                      xx_width_pos: int, yy_width_pos: int) -> Tuple[int, int]:
@@ -46,11 +55,18 @@ def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str, 
         for xx_i, sent_index in enumerate(xx_inds, start=1):
             node_id = f'{xx}-{sent_index}'
             sentence = xx_sentences[sent_index].en_translation if show_en_trans else xx_sentences[sent_index].sentence
-            formatted_sent = _format_sentence_for_node(sentence)
+            if len(xx_sentences[sent_index].intra_annotations) == 0:
+                formatted_sent = _format_sentence_for_node(sentence)
+            else:
+                formatted_sent = sentence
             G.add_node(node_id, title=formatted_sent, group=xx, x=xx_width_pos + (xx_i * width_spacing * xx_width_step), y=xx_height_pos, physics=False, value=2)
         for yy_i, sent_index in enumerate(yy_inds, start=1):
             node_id = f'{yy}-{sent_index}'
             sentence = yy_sentences[sent_index].en_translation if show_en_trans else yy_sentences[sent_index].sentence
+            if len(yy_sentences[sent_index].intra_annotations) == 0:
+                formatted_sent = _format_sentence_for_node(sentence)
+            else:
+                formatted_sent = sentence
             formatted_sent = _format_sentence_for_node(sentence)
             G.add_node(node_id, title=formatted_sent, group=yy, x=yy_width_pos + (yy_i * width_spacing * yy_width_step), y=yy_height_pos, physics=False, value=2)
         # add cross-lingual edges
@@ -87,10 +103,6 @@ def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str, 
                         arg2 = r['arg2_sentence']
                     G.get_node(arg1_node_id)['title'] = _format_intra_node(sentence, arg1, arg2, rel_type)
 
-    def _render_streamlit_component(component_path: str) -> None:
-        with open(component_path, 'r', encoding='utf-8') as f:
-            source_code = f.read()
-        components.html(source_code, width=width_pixels, height=height_pixels)
 
     pairwise_indices = mtalk.pairwise_alignments[(xx, yy)]
     pairwise_relations = mtalk.get_pairwise_aligned_relations(xx, yy)
@@ -126,7 +138,7 @@ def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str, 
 
     st.write('When graph network is not visible, click on any point in the empty box and drag it to upper-left direction a few times.')
     st.write('You can also zoom-in and zoom-out on the graph, and click on the nodes and edges.')
-    _render_streamlit_component(output_graph_path)
+    _render_streamlit_component(output_graph_path, width_pixels, height_pixels)
 
 
 def page_pairwise_talks(mtalks: Dict[str, MultilingualTalk]) -> None:
