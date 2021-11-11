@@ -13,6 +13,13 @@ $ pip install -r requirements.txt
 $ streamlit run main.py
 ```
 
+# Screenshots
+![image](https://user-images.githubusercontent.com/3746478/141259655-7e41b3ba-4beb-4d1d-a348-cd4072904e65.png)
+![image](https://user-images.githubusercontent.com/3746478/141259755-525a35aa-5b24-41f0-8552-21f5efb08453.png)
+![image](https://user-images.githubusercontent.com/3746478/141259836-586467e5-e265-4acf-ae63-452386750208.png)
+![image](https://user-images.githubusercontent.com/3746478/141260034-4de88f26-4394-4b77-914e-22858924f142.png)
+![image](https://user-images.githubusercontent.com/3746478/141260180-82eba73d-1a06-466a-ad50-d664303e2051.png)
+
 # Citations
 This work builds upon the datasets created by multiple authors.
 If you use this resource, please consider citing:
