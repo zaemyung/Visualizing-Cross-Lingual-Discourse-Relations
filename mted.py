@@ -14,8 +14,9 @@ TALK_IDS = ['talk_1927', 'talk_1971', 'talk_1976', 'talk_1978', 'talk_2009', 'ta
 class Sentence:
     """Stores sentence-level information"""
 
-    def __init__(self, sentence: dict):
+    def __init__(self, sentence: dict, sentence_index: int):
         self.sentence = sentence['sentence']
+        self.sentence_index = sentence_index
         self.language = sentence['language']
         self.en_translation = sentence['en_translation']
         self.intra_annotations = []
@@ -48,7 +49,7 @@ class Talk:
         self.sentences = self._load_sentences_from_json(talk['sentences'])
 
     def _load_sentences_from_json(self, dict_sentences: List[dict]) -> List[Sentence]:
-        sentences = [Sentence(sent) for sent in dict_sentences]
+        sentences = [Sentence(sent, index) for index, sent in enumerate(dict_sentences)]
         for annot in self.annotations:
             arg1_sent_index = annot['arg1_sentence_index']
             arg2_sent_index = annot['arg2_sentence_index']
