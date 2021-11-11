@@ -22,8 +22,6 @@ def _render_result_network_graph(result: Dict,
                 class_type = '.'.join(r.get('sclass1a', 'N/A').split('.')[:2])
                 rel_type = f'{r["relation_type"]}\n{class_type}'
                 sentence_str = _format_intra_node(sentence_str, r['arg1_sentence'], r['arg2_sentence'], rel_type)
-        else:
-            sentence_str = _format_sentence_for_node(sentence_str)
         G.add_node(node_id, title=sentence_str, group=xx, x=xx_width_pos, y=0, physics=False, value=2)
 
     def _add_inter_relation_edges(sentence: Sentence) -> None:
@@ -58,6 +56,8 @@ def _render_result_network_graph(result: Dict,
         _add_node(after_sentence, 500)
         _add_inter_relation_edges(before_sentence)
         _add_inter_relation_edges(curr_sentence)
+        for node_id in G.get_nodes():
+            G.get_node(node_id)['title'] = _format_sentence_for_node(G.get_node(node_id)['title'])
 
         if not os.path.isdir(rendering_dir):
             os.makedirs(rendering_dir)

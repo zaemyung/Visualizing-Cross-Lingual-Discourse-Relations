@@ -23,7 +23,6 @@ def _format_intra_node(whole_sentence: str, arg1_part: str, arg2_part: str, rel_
     # surround arg1_part and arg2_part with tag
     whole_sentence = whole_sentence.replace(arg1_part, f' ❮{rel_type}-arg1❯ {arg1_part} ❮/arg1❯ ')
     whole_sentence = whole_sentence.replace(arg2_part, f' ❮{rel_type}-arg2❯ {arg2_part} ❮/arg2❯ ')
-    whole_sentence = _format_sentence_for_node(whole_sentence)
     return whole_sentence
 
 
@@ -55,20 +54,11 @@ def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str, 
         for xx_i, sent_index in enumerate(xx_inds, start=1):
             node_id = f'{xx}-{sent_index}'
             sentence = xx_sentences[sent_index].en_translation if show_en_trans else xx_sentences[sent_index].sentence
-            if len(xx_sentences[sent_index].intra_annotations) == 0:
-                formatted_sent = _format_sentence_for_node(sentence)
-            else:
-                formatted_sent = sentence
-            G.add_node(node_id, title=formatted_sent, group=xx, x=xx_width_pos + (xx_i * width_spacing * xx_width_step), y=xx_height_pos, physics=False, value=2)
+            G.add_node(node_id, title=sentence, group=xx, x=xx_width_pos + (xx_i * width_spacing * xx_width_step), y=xx_height_pos, physics=False, value=2)
         for yy_i, sent_index in enumerate(yy_inds, start=1):
             node_id = f'{yy}-{sent_index}'
             sentence = yy_sentences[sent_index].en_translation if show_en_trans else yy_sentences[sent_index].sentence
-            if len(yy_sentences[sent_index].intra_annotations) == 0:
-                formatted_sent = _format_sentence_for_node(sentence)
-            else:
-                formatted_sent = sentence
-            formatted_sent = _format_sentence_for_node(sentence)
-            G.add_node(node_id, title=formatted_sent, group=yy, x=yy_width_pos + (yy_i * width_spacing * yy_width_step), y=yy_height_pos, physics=False, value=2)
+            G.add_node(node_id, title=sentence, group=yy, x=yy_width_pos + (yy_i * width_spacing * yy_width_step), y=yy_height_pos, physics=False, value=2)
         # add cross-lingual edges
         for xx_sent_index, yy_sent_index in product(xx_inds, yy_inds):
             xx_node_id = f'{xx}-{xx_sent_index}'
@@ -130,6 +120,8 @@ def render_interactive_graph_network(mtalk: MultilingualTalk, xx: str, yy: str, 
         for xx_rels, yy_rels in pairwise_relations:
             _add_relation_edges(xx_rels, xx, xx_sentences)
             _add_relation_edges(yy_rels, yy, yy_sentences)
+        for node_id in G.get_nodes():
+            G.get_node(node_id)['title'] = _format_sentence_for_node(G.get_node(node_id)['title'])
 
         if not os.path.isdir(rendering_dir):
             os.makedirs(rendering_dir)
