@@ -27,7 +27,7 @@ If you use this resource, please consider citing:
 ```
 @inproceedings{kim-etal-2021-visualizing,
     title={Visualizing Cross‐Lingual Discourse Relations in Multilingual TED Corpora},
-    author={Kim, Zae Myung and Nikoulina, Vassilina and Kang, Dongyeop and Schwab, Didier and Besacier, Laurent",
+    author={Kim, Zae Myung and Nikoulina, Vassilina and Kang, Dongyeop and Schwab, Didier and Besacier, Laurent},
     booktitle={Proceedings of the 2nd Workshop on Computational Approaches to Discourse},
     pages={165--170},
     year={2021},
